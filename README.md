@@ -26,7 +26,7 @@ Steps
 2. Click draw
 3. The routes are visialized below and there is check if the cost values computed matches printed cost.
 
-![image NOT lOaDeD](images/cvrp-eg.png)
+![image NOT lOaDeD](images/cvrp-eg1.png)
 
 ### count++
 <!-- hitwebcounter Code START -->
