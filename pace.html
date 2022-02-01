@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<input type="file" id="fileInput">
+
+<input type="checkbox" id="format" value="1"> PACE format  
+<button onclick="formatText()">Convert it!</button> 
+<button onclick="copyToClip()">Copy it!</button>   
+<a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank" >Graph Viz </a>
+<br>
+<br>
+<br>
+<script>
+	function copyToClip() {
+  /* Get the text field */
+  var copyText = document.getElementById("outBox");
+
+  /* Select the text field */
+  copyText.select();
+
+  /* Copy the text inside the text field */
+  document.execCommand("Copy");
+
+  /* Alert the copied text */
+  alert("Copied the text! " );
+} 
+
+	fileInput.addEventListener('change', function(e) {
+			var file = fileInput.files[0];
+			var reader = new FileReader();
+
+			reader.onload = function(e) {
+				document.getElementById("inBox").value = reader.result;
+				//~ outBox.innerText = reader.result;
+			}
+
+			reader.readAsText(file);	
+			
+		});
+		
+function formatText() {
+	var formatedText ="graph G {\n";
+    var text = document.getElementById("inBox").value;
+    text = text.trim(); // clears up whitespace chars
+    var lines = text.split("\n");
+    if(lines[0]=="SECTION Graph") {	 
+    	for (var i = 0; i < lines.length; i++) {
+     		var words = lines[i].split(" ");
+			if(words[0]=="E")
+				formatedText += words[1] + " -- " + words[2] + "[label=" + words[3] + ",color=red, penwidth=2]" + "\n";
+            else if(words[0]=="T")   
+            	formatedText += words[1] + ' [shape="doublecircle"]'+ "\n";
+    	}
+        formatedText += "}";
+          
+   }else{
+   		for (var i = 0; i < lines.length; i++) {
+     		var words = lines[i].split(" ");
+     		if(words.length > 2){
+     		formatedText += words[0] + " -- " + words[1] + "[label=" + words[2] + ",color=red, penwidth=2]" + "\n";
+			}
+     		else
+				formatedText += words[0] + " -- " + words[1] + "\n";
+				
+    	}
+        formatedText += "}";
+        
+   
+   }
+   document.getElementById("outBox").value = formatedText;    
+}
+</script>
+
+	
+
+<textarea id="inBox" rows="25" cols="50">
+SECTION Graph
+Nodes 9
+Edges 14
+E 0 1 4
+E 0 7 8
+E 1 7 11
+E 1 2 8
+E 7 8 7
+E 7 6 1
+E 2 8 2
+E 6 8 6
+E 2 3 7
+E 2 5 4
+E 6 5 2
+E 3 4 9
+E 3 5 14
+E 5 4 10
+END
+
+SECTION Terminals
+Terminals 1
+T 0
+END
+
+EOF
+
+</textarea>
+
+
+<textarea id="outBox" rows="25" cols="50">
+</textarea>
+
+</body>
+</html>
