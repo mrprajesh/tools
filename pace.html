@@ -5,9 +5,9 @@
 
 <input type="file" id="fileInput">
 
-<input type="checkbox" id="format" value="1"> PACE format  
-<button onclick="formatText()">Convert it!</button> 
-<button onclick="copyToClip()">Copy it!</button>   
+<input type="checkbox" id="format" value="1"> PACE format
+<button onclick="formatText()">Convert it!</button>
+<button onclick="copyToClip()">Copy it!</button>
 <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank" >Graph Viz </a>
 <br>
 <br>
@@ -25,7 +25,7 @@
 
   /* Alert the copied text */
   alert("Copied the text! " );
-} 
+}
 
 	fileInput.addEventListener('change', function(e) {
 			var file = fileInput.files[0];
@@ -36,25 +36,25 @@
 				//~ outBox.innerText = reader.result;
 			}
 
-			reader.readAsText(file);	
-			
+			reader.readAsText(file);
+
 		});
-		
+
 function formatText() {
 	var formatedText ="graph G {\n";
     var text = document.getElementById("inBox").value;
     text = text.trim(); // clears up whitespace chars
     var lines = text.split("\n");
-    if(lines[0]=="SECTION Graph") {	 
+    if(lines[0]=="SECTION Graph") {
     	for (var i = 0; i < lines.length; i++) {
      		var words = lines[i].split(" ");
 			if(words[0]=="E")
 				formatedText += words[1] + " -- " + words[2] + "[label=" + words[3] + ",color=red, penwidth=2]" + "\n";
-            else if(words[0]=="T")   
+            else if(words[0]=="T")
             	formatedText += words[1] + ' [shape="doublecircle"]'+ "\n";
     	}
         formatedText += "}";
-          
+
    }else{
    		for (var i = 0; i < lines.length; i++) {
      		var words = lines[i].split(" ");
@@ -63,17 +63,17 @@ function formatText() {
 			}
      		else
 				formatedText += words[0] + " -- " + words[1] + "\n";
-				
+
     	}
         formatedText += "}";
-        
-   
+
+
    }
-   document.getElementById("outBox").value = formatedText;    
+   document.getElementById("outBox").value = formatedText;
 }
 </script>
 
-	
+
 
 <textarea id="inBox" rows="25" cols="50">
 SECTION Graph
@@ -107,6 +107,9 @@ EOF
 
 <textarea id="outBox" rows="25" cols="50">
 </textarea>
-
+<br>
+<!-- hitwebcounter Code START -->
+<a href="https://www.hitwebcounter.com" target="_blank">
+<img src="https://hitwebcounter.com/counter/counter.php?page=7936065&style=0027&nbdigits=5&type=ip&initCount=2" title="Free Counter" Alt="web counter"   border="0" /></a>
 </body>
 </html>
