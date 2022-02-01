@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+FileInput
+<input type="file" id="fileInput">
+FileOutput
+<input type="file" id="fileOutput">
+
+
+<button onclick="formatText()">Check!</button>
+
+
+<br>
+<br>
+<br>
+<script>
+
+fileInput.addEventListener('change', function(e) {
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+
+  reader.onload = function(e) {
+    document.getElementById("inBox").value = reader.result;
+  }
+
+  reader.readAsText(file);
+});
+
+fileOutput.addEventListener('change', function(e) {
+  var file = fileOutput.files[0];
+  var reader = new FileReader();
+
+  reader.onload = function(e) {
+    document.getElementById("outBox").value = reader.result;
+  }
+
+  reader.readAsText(file);
+});
+
+function formatText() {
+  var formatedText = "N";
+  //! var DEFAULT = -1;
+  //! var N = DEFAULT;
+  //! var x = DEFAULT,
+  //! var y = DEFAULT;
+  var xArr = [];
+  var yArr = [];
+
+  var text = document.getElementById("inBox").value;
+  text = text.trim(); // clears up whitespace chars
+  var lines = text.split("\n");
+  var nTotal = 0;
+  //! vat xArr = {};
+  //! vat yArr = {};
+  for (var i = 0; i < lines.length; ++i) {
+    var words = lines[i].split(" ");
+    if(words[0] == "DIMENSION") {
+      nTotal = parseInt(words[2], 10);
+      //! alert("Thank you! N: " + nTotal);
+    }
+    else if(words[0] == "NODE_COORD_SECTION"){
+      //! i++; // skip to next line
+      for(var jj=0; jj < nTotal; ++jj){
+        words = lines[++i].split(" ");
+        var x = parseInt(words[1], 10);
+        var y = parseInt(words[2], 10);
+        //! alert(x+" -- "+ y);
+        xArr.push(x);
+        yArr.push(y);
+        //! formatedText += x + ' ' + y + '\n';
+      }
+      //! alert("xLen: " + xArr.length);
+    }
+  }
+  //! for(var ii=0; ii < nTotal; ++ii){
+    //! alert(xArr[ii] + "," + yArr[ii]);
+  //! }
+  var dist = [[]];
+  for(var ii=0; ii < nTotal; ++ii){
+    dist[ii] = [];
+    dist[ii][ii] = 0;
+  }
+  for(var ii=0; ii < nTotal; ++ii){
+    for(var jj=0; jj < nTotal; ++jj) {
+      if( ii < jj) {
+        var xDiff = Math.abs(xArr[ii]-xArr[jj]);
+        var yDiff = Math.abs(yArr[ii]-yArr[jj]);
+        var d = Math.sqrt(xDiff*xDiff+yDiff*yDiff);
+        //! alert("dist " +ii + " " + jj+ " :" + d);
+        dist[ii][jj] = d;
+        dist[jj][ii] = d;
+        console.log(d + " ");
+      }
+      //! console.log("\n");
+    }
+  }
+
+  text = document.getElementById("outBox").value;
+  text = text.trim(); // clears up whitespace chars
+  lines = text.split("\n");
+
+  var solVal = 0;
+  var outVal = 0;
+  for (var i = 0; i < lines.length; ++i) {
+    var words = lines[i].split(" ");
+    var routeVal = 0;
+    var prevPoint = 0
+    if(words[0] == "Route") {
+      for(var jj = 2, len=words.length; jj < len; ++jj ){
+        //! alert(words[jj]);
+        var aPoint = parseInt(words[jj], 10);
+        routeVal += dist[prevPoint][aPoint];
+        prevPoint = aPoint;
+      }
+      routeVal +=dist[prevPoint][0];
+      solVal +=routeVal;
+    }
+    else if(words[0] == "Cost"){
+      outVal = parseInt(words[1], 10);
+    }
+  }
+
+  //! alert("SolVal: " + solVal);
+
+  var isValid = Math.round(solVal) == outVal;
+  formatedText  =   "N\t: "    + nTotal  + "\n";
+  formatedText +=  "VALID\t: " + isValid + "\n";
+  formatedText +=  "VALUE\t: " + solVal  + "\n";
+  document.getElementById("resultBox").value = formatedText;
+}
+</script>
+
+
+
+<textarea id="inBox" rows="25" cols="50">
+NAME : toy.vrp
+COMMENT : toy instance>
+TYPE : CVRP
+DIMENSION : 6
+EDGE_WEIGHT_TYPE : EUC_2D
+CAPACITY : 30
+NODE_COORD_SECTION
+1 38 46
+2 59 46
+3 96 42
+4 47 61
+5 26 15
+6 66 6
+DEMAND_SECTION
+1 0
+2 16
+3 18
+4 1
+5 13
+6 8
+DEPOT_SECTION
+1
+-1
+EOF
+
+
+</textarea>
+
+
+<textarea id="outBox" rows="25" cols="50">
+Route #1: 1 4
+Route #2: 3 2 5
+Cost 265
+</textarea>
+
+<textarea id="resultBox" rows="25" cols="50">
+N     : ?
+VALID : ?
+VALUE : ?
+</textarea>
+
+
+<br>
+
+v1.0.
+
+</body>
+</html>
