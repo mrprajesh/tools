@@ -8,7 +8,7 @@ Welcome to [Rajesh's](https://mrprajesh.co.in/) tools. These are some of the too
 2. [CVRP](./cvrp2.html)
 
 
-#### Steiner
+#### Steiner Tree
 
 Steps 
 1. Choose the input `.stp` file.
