@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+## Rajesh's tools
 
-You can use the [editor on GitHub](https://github.com/mrprajesh/tools/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Welcome to [Rajesh's](https://mrprajesh.co.in/) tools. These are some of the tools that I have build for aiding my research work at IIT Madras.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Visualization 
 
-### Markdown
+1. [Steiner Tree](./pace.html)
+2. [CVRP](./cvrp2.html)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
+#### Steiner
 
-# Header 1
-## Header 2
-### Header 3
+Steps 
+1. Choose the input `.stp` file.
+2. Click the `convert` button to generate graphviz text.
+3. Click copy (get into your clipboard).
+4. Click graphviz link biside and paste it to visualize.
 
-- Bulleted
-- List
+#### CVRP
+Steps
+1. Two ways. (choose the input `.vrp` file and ouput `.sol` file) or paste the its contents  into box
+2. Click draw
+3. The routes are visialized below and there is check if the cost values computed matches printed cost. 
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
+### count++
+<!-- hitwebcounter Code START -->
+<a href="https://www.hitwebcounter.com" target="_blank">
+<img src="https://hitwebcounter.com/counter/counter.php?page=7936054&style=0027&nbdigits=6&type=page&initCount=0" title="Free Counter" Alt="web counter"   border="0" /></a>                
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mrprajesh/tools/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
