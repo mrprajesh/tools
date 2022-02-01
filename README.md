@@ -4,8 +4,8 @@ Welcome to [Rajesh's](https://mrprajesh.co.in/) tools. These are some of the too
 
 ### Visualization
 
-1. [Steiner Tree](./pace.html)  // Steps [Below](steiner-tree)
-2. [CVRP](./cvrp2.html)         // Steps [Below](cvrp)
+1. [Steiner Tree](./pace.html)  // Steps [Below](#steiner-tree)
+2. [CVRP](./cvrp2.html)         // Steps [Below](#cvrp)
 
 ![image NOT lOaDeD](images/cvrp-eg.png)
 
