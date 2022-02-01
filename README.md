@@ -4,8 +4,8 @@ Welcome to [Rajesh's](https://mrprajesh.co.in/) tools. These are some of the too
 
 ### Visualization
 
-1. [Steiner Tree](./pace.html)
-2. [CVRP](./cvrp2.html)
+1. [Steiner Tree](./pace.html)  // Steps [Below](steiner-tree)
+2. [CVRP](./cvrp2.html)         // Steps [Below](cvrp)
 
 ![image NOT lOaDeD](images/cvrp-eg.png)
 
@@ -17,8 +17,7 @@ Steps
 3. Click copy (get into your clipboard).
 4. Click graphviz link biside and paste it to visualize.
 
-![image NOT lOaDeD](images/steiner-eg1.png)
-![image NOT lOaDeD](images/steiner-eg2.png)
+![image NOT lOaDeD](images/steiner-demo.gif)
 
 #### CVRP
 Steps
@@ -26,7 +25,7 @@ Steps
 2. Click draw
 3. The routes are visialized below and there is check if the cost values computed matches printed cost.
 
-![image NOT lOaDeD](images/cvrp-eg1.png)
+![image NOT lOaDeD](images/cvrp-demo.gif)
 
 ### count++
 <!-- hitwebcounter Code START -->
