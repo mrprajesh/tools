@@ -51,7 +51,10 @@ VALUE : ?
 
     FileInput (*.vrp): <input type="file" id="fileInput">
     FileOutput (*.sol): <input type="file" id="fileOutput">
-    <button onclick="drawChart();formatText();">Draw</button>
+  <br>
+  <input type="radio" id="depot" name="depot" value="Depot" checked  > <label>Depot</label>
+  <input type="radio" id="depot" name="depot" value="NoDepot" > <label>No Depot</label><br>
+  <button onclick="formatText();drawChart();">Draw</button>
 
   <br><br>
   <div id="chart_div"></div>
@@ -59,6 +62,11 @@ VALUE : ?
 
 
 <script>
+
+let aRouteCost = [];
+let demand = [];
+let xArr = [];
+let yArr = [];
 
 fileInput.addEventListener('change', function(e) {
   var file = fileInput.files[0];
@@ -97,7 +105,9 @@ fileOutput.addEventListener('change', function(e) {
 
         var data = new google.visualization.DataTable();
 
-
+        var depotLine =  document.getElementsByName('depot');
+        var isDepot = depotLine[0].checked;
+        //~ alert(isDepot);
         data.addColumn('number', 'x-coord');
         //data.addColumn('number', "Route 1");
         //data.addColumn('number', "Route 2");
@@ -122,6 +132,8 @@ fileOutput.addEventListener('change', function(e) {
         data.addColumn(toolObj);
         data.addColumn(certObj);
         */
+
+        /*
         // READ INPUT
         var xArr = [];
         var yArr = [];
@@ -144,14 +156,22 @@ fileOutput.addEventListener('change', function(e) {
               words = lines[++i].split(/\s+|\t/);
               var x = parseInt(words[1], 10);
               var y = parseInt(words[2], 10);
-              //! alert(x+" -- "+ y);
               xArr.push(x);
               yArr.push(y);
-              //! formatedText += x + ' ' + y + '\n';
             }
-            //! alert("xLen: " + xArr.length);
+          }
+          else if(words[0] == "DEMAND_SECTION"){
+            for(var jj=0; jj < nTotal; ++jj){
+              words = lines[++i].split(/\s+|\t/);
+              var v = parseInt(words[0], 10);
+              var d = parseInt(words[1], 10);
+              demand.push(d);
+              if(v-1!=jj)
+                alert("DEMAND ERROR! "+v-1+ " != " + jj);
+            }
           }
         }
+        */
 
         // READ OUT
         text = document.getElementById("outBox").value;
@@ -173,7 +193,12 @@ fileOutput.addEventListener('change', function(e) {
 
         var k = 0;
         var DEP=0;
-
+        //~ if(lines.length-1>0){
+          //~ data.addRows(1); // DEPOT
+          //~ data.setCell(k, 0, xArr[DEP]);
+          //~ data.setCell(k, shift+1, yArr[DEP]);
+          //~ k++;
+        //~ }
         for (var i = 0, shift=0; i < lines.length-1; ++i, shift+=3) {
           //~ var words = lines[i].split(" "); //TRIM?
           var words = lines[i].split(/\s+|\t/); //TRIM?
@@ -182,26 +207,37 @@ fileOutput.addEventListener('change', function(e) {
           data.addRows(words.length);  // it include +2 -- which is same a pre & post fix depot
 
           if(words[0] == "Route") { // e.g Route #1: 1 2 3 4
-          	 data.setCell(k, 0, xArr[DEP]);
-             data.setCell(k, shift+1, yArr[DEP]);
-             //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
-             data.setCell(k, shift+3, false);
+             if(isDepot){ // disables dashed lines: depot to 1st node
+              data.setCell(k, 0, xArr[DEP]);
+              data.setCell(k, shift+1, yArr[DEP]);
+               //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
+              data.setCell(k, shift+3, false);
+             }
              k++;
             for(var jj = 2, len=words.length; jj < len; ++jj, ++k ){
               var aPoint = parseInt(words[jj], 10);
               data.setCell(k, 0, xArr[aPoint]);
             	data.setCell(k, shift+1, yArr[aPoint]);
-              data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: " + aPoint);
+              data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: " + aPoint+ " Demand:"+demand[aPoint]+" routeCost:"+aRouteCost[i].toFixed(1) );
               data.setCell(k, shift+3, true);
             }
-             data.setCell(k, 0, xArr[DEP]);
-             data.setCell(k, shift+1, yArr[DEP]);
-             data.setCell(k, shift+2, "DEPOT");
-             //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
-             data.setCell(k, shift+3, false);
-             k++;
+            if(isDepot){ // disables dashed lines: last node to depot
+              data.setCell(k, 0, xArr[DEP]);
+              data.setCell(k, shift+1, yArr[DEP]);
+              data.setCell(k, shift+2, "DEPOT");
+              //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
+              data.setCell(k, shift+3, false);
+            }
+            k++;
           }
+
         }
+
+        data.addRows(1); // DEPOT POINT
+        data.setCell(k, 0, xArr[DEP]);
+        data.setCell(k, 1, yArr[DEP]);
+        data.setCell(k, 2, "DEPOT");
+
 
         //~ var depotData = google.visualization.arrayToDataTable
             //~ ([['x', 'Y', {'type': 'string', 'role': 'style'}],
@@ -401,20 +437,21 @@ fileOutput.addEventListener('change', function(e) {
           //~ classicChart.draw(depotData, classicOptions);
           //button.innerText = 'Change to Material';
           //button.onclick = drawMaterialChart;
+
         }
 
         drawClassicChart();
 
       }
 
-      function formatText() {
+function formatText() {
   var formatedText = "N";
   //! var DEFAULT = -1;
   //! var N = DEFAULT;
   //! var x = DEFAULT,
   //! var y = DEFAULT;
-  var xArr = [];
-  var yArr = [];
+
+  console.info(demand);
 
   var text = document.getElementById("inBox").value;
   text = text.trim(); // clears up whitespace chars
@@ -438,6 +475,17 @@ fileOutput.addEventListener('change', function(e) {
         xArr.push(x);
         yArr.push(y);
         //! formatedText += x + ' ' + y + '\n';
+      }
+    }
+    else if(words[0] == "DEMAND_SECTION"){
+      //! i++; // skip to next line
+      for(var jj=0; jj < nTotal; ++jj){
+        words = lines[++i].split(/\s+|\t/);
+        var v = parseInt(words[0], 10);
+        var d = parseInt(words[1], 10);
+        demand.push(d);
+        if(v-1!=jj)
+          alert("DEMAND ERROR! "+v-1+ " != " + jj);
       }
       //! alert("xLen: " + xArr.length);
     }
@@ -469,6 +517,7 @@ fileOutput.addEventListener('change', function(e) {
   text = text.trim(); // clears up whitespace chars
   lines = text.split("\n");
 
+
   var solVal = 0;
   var outVal = 0;
   for (var i = 0; i < lines.length; ++i) {
@@ -484,6 +533,7 @@ fileOutput.addEventListener('change', function(e) {
       }
       routeVal +=dist[prevPoint][0];
       solVal +=routeVal;
+      aRouteCost.push(routeVal);
     }
     else if(words[0] == "Cost"){
       outVal = parseInt(words[1], 10);
