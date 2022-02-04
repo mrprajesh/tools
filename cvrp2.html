@@ -1,3 +1,25 @@
+<!--
+   cvrp2.html
+
+   Copyright 2022 Rajesh Pandian M <mrprajesh.co.in>
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.
+
+
+-->
 
 <!DOCTYPE html>
 <html>
@@ -47,7 +69,7 @@ VALUE : ?
 <br>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-     <!-- <button id="change-chart"> Chumma</button> -->
+
 
     FileInput (*.vrp): <input type="file" id="fileInput">
     FileOutput (*.sol): <input type="file" id="fileOutput">
@@ -60,8 +82,6 @@ VALUE : ?
   Round cord:
   <input type="radio" id="round" name="round" value="Round"           > <label>True</label>
   <input type="radio" id="round" name="round" value="NoRound" checked > <label>False</label>
-  <br>
-
   <div id="chart_div"></div>
 
 
@@ -105,7 +125,7 @@ google.charts.load('current', {
     'packages': ['line', 'corechart']
   });
 
-  //google.charts.setOnLoadCallback(drawChart);
+//~ google.charts.setOnLoadCallback(drawChart);
 
 function drawChart() {
 
@@ -182,7 +202,7 @@ function drawChart() {
 
   function drawClassicChart() {
     var classicOptions = {
-      title: 'DIMACS Instance:  ' + instName + '  N:' + nTotal + '  Capacity:' + capacity,
+      title: 'CVRP Instance:  ' + instName + '  N:' + nTotal + '  Capacity:' + capacity,
       width: 1024,
       height: 1024,
       legend: true,
@@ -200,9 +220,6 @@ function drawChart() {
 
     var classicChart = new google.visualization.LineChart(chartDiv);
     classicChart.draw(data, classicOptions);
-    //~ classicChart.draw(depotData, classicOptions);
-    //button.innerText = 'Change to Material';
-    //button.onclick = drawMaterialChart;
 
   }
 
@@ -222,8 +239,6 @@ function formatText() {
   text = text.trim(); // clears up whitespace chars
   var lines = text.split("\n");
 
-  //! vat xArr = {};
-  //! vat yArr = {};
   for (var i = 0; i < lines.length; ++i) {
     var words = lines[i].split(/\s+|\t/); //spaces and tabs
     if(words[0] == "NAME") {
@@ -240,11 +255,11 @@ function formatText() {
         words = lines[++i].split(/\s+|\t/); //spaces and tabs
         //~ var x = parseInt(words[1], 10);
         //~ var y = parseInt(words[2], 10);
-        var x = parseFloat(words[1]);
+        var x = parseFloat(words[1]); //Default is not rounded.  if read int or float with no deimals. stores as int.
         var y = parseFloat(words[2]);
-        if(isRound){
-          x = Math.abs(x);
-          y = Math.abs(y);
+        if(isRound){ // ROUNDS if option is changed
+          x = Math.round(x);
+          y = Math.round(y);
         }
         //~ alert(x+" -- "+ y);
         xArr.push(x);
@@ -319,8 +334,8 @@ function formatText() {
     }
   }
 
-  var isValid = Math.round(solVal) == outVal;
-  //~ var isValid = Math.abs(solVal-outVal) < 1;
+  //~ var isValid = Math.round(solVal) == outVal;
+  var isValid = Math.abs(solVal-outVal) < 1;
   formatedText  =   "N\t: "    + nTotal  + "\n";
   formatedText +=  "VALID\t: " + isValid + "\n";
   formatedText +=  "VALUE\t: " + solVal  + "\n";
@@ -332,9 +347,6 @@ function formatText() {
 
 
 
-
-
-<br>
 
 
 <!-- hitwebcounter Code START -->
