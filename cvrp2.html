@@ -117,18 +117,16 @@ function drawChart() {
   var depotLine =  document.getElementsByName('depot');
   var isDepot   = depotLine[0].checked; // Depot lines radio button default selected!
 
-  var depotLine =  document.getElementsByName('depot');
-  var isDepot   = depotLine[0].checked; // Depot lines radio button default selected!
 
   data.addColumn('number', 'x-coord');
 
   // READ OUT
-  text = document.getElementById("outBox").value;
+  var text = document.getElementById("outBox").value;
   text = text.trim(); // clears up whitespace chars
   //text = "Route #1: 1 4\nRoute #2: 3 2 5\nRoute #3: 1 4\nRoute #4: 3 2 5\nCost 265"	//FOR DEBUG
 
 
-  lines = text.split("\n");
+  var lines = text.split("\n");
   //~ document.getElementById("resultBox").value = lines.length; //DEBUG
 
   var toolObj = {type: 'string',role: 'tooltip'};
@@ -213,9 +211,12 @@ function drawChart() {
 }
 
 function formatText() {
+
   var formatedText = "N";
 
-  //console.info(demand);
+  var roundRadioBtn =  document.getElementsByName('round');
+  var isRound   = roundRadioBtn[0].checked; // ToRoundCoordinates radio button default:false selected!
+
 
   var text = document.getElementById("inBox").value;
   text = text.trim(); // clears up whitespace chars
@@ -235,15 +236,20 @@ function formatText() {
       capacity = parseInt(words[2], 10);
     }
     else if(words[0] == "NODE_COORD_SECTION"){
-      //! i++; // skip to next line
       for(var jj=0; jj < nTotal; ++jj){
         words = lines[++i].split(/\s+|\t/); //spaces and tabs
-        var x = parseInt(words[1], 10);
-        var y = parseInt(words[2], 10);
-        //! alert(x+" -- "+ y);
+        //~ var x = parseInt(words[1], 10);
+        //~ var y = parseInt(words[2], 10);
+        var x = parseFloat(words[1]);
+        var y = parseFloat(words[2]);
+        if(isRound){
+          x = Math.abs(x);
+          y = Math.abs(y);
+        }
+        //~ alert(x+" -- "+ y);
         xArr.push(x);
         yArr.push(y);
-        //! formatedText += x + ' ' + y + '\n';
+
       }
     }
     else if(words[0] == "DEMAND_SECTION"){
@@ -256,12 +262,10 @@ function formatText() {
         if(v-1!=jj)
           alert("DEMAND ERROR! "+v-1+ " != " + jj);
       }
-      //! alert("xLen: " + xArr.length);
+
     }
   }
-  //! for(var ii=0; ii < nTotal; ++ii){
-    //! alert(xArr[ii] + "," + yArr[ii]);
-  //! }
+
   var dist = [[]];
   for(var ii=0; ii < nTotal; ++ii){
     dist[ii] = [];
@@ -304,14 +308,14 @@ function formatText() {
         prevPoint = aPoint;
       }
       routeVal +=dist[prevPoint][0];
-      solVal +=routeVal;
-      console.log(solVal); //PRINT
+      solVal   +=routeVal;
+      //~ console.log(solVal); //PRINT for DEBUG
       aRouteCost.push(routeVal);
       aRouteDemand.push(rDemand);
     }
     else if(words[0] == "Cost"){
       outVal = parseInt(words[1], 10);
-      alert(outVal);
+      //~ alert(outVal);
     }
   }
 
@@ -337,7 +341,7 @@ function formatText() {
 <a href="https://www.hitwebcounter.com" target="_blank">
 <img src="https://hitwebcounter.com/counter/counter.php?page=7936065&style=0027&nbdigits=5&type=ip&initCount=2" title="Free Counter" Alt="web counter"   border="0" /></a>
 <br>
-v1.2. Date:30-Jan-2022
+v1.5. Date Created: 30-Jan-2022. Date Updated: 04-Feb-2022.
 Author: <a href="https://mrprajesh.co.in" target="_blank"> Rajesh Pandian M </a>
 <br><br>
 Thanks to <a href="http://vrp.atd-lab.inf.puc-rio.br/index.php/en/plotted-instances?data=A-n32-k5"> CVRPLIB</a> for the inspiration!
