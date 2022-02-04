@@ -133,7 +133,7 @@ fileOutput.addEventListener('change', function(e) {
         var lines = text.split("\n");
         var nTotal = 0;
         for (var i = 0; i < lines.length; ++i) {
-          var words = lines[i].split(" ");
+          var words = lines[i].split(/\s+|\t/);
           if(words[0] == "DIMENSION") {
             nTotal = parseInt(words[2], 10);
             //! alert("Thank you! N: " + nTotal);
@@ -141,7 +141,7 @@ fileOutput.addEventListener('change', function(e) {
           else if(words[0] == "NODE_COORD_SECTION"){
             //! i++; // skip to next line
             for(var jj=0; jj < nTotal; ++jj){
-              words = lines[++i].split(" ");
+              words = lines[++i].split(/\s+|\t/);
               var x = parseInt(words[1], 10);
               var y = parseInt(words[2], 10);
               //! alert(x+" -- "+ y);
@@ -175,7 +175,8 @@ fileOutput.addEventListener('change', function(e) {
         var DEP=0;
 
         for (var i = 0, shift=0; i < lines.length-1; ++i, shift+=3) {
-          var words = lines[i].split(" "); //TRIM?
+          //~ var words = lines[i].split(" "); //TRIM?
+          var words = lines[i].split(/\s+|\t/); //TRIM?
 
 
           data.addRows(words.length);  // it include +2 -- which is same a pre & post fix depot
@@ -422,7 +423,7 @@ fileOutput.addEventListener('change', function(e) {
   //! vat xArr = {};
   //! vat yArr = {};
   for (var i = 0; i < lines.length; ++i) {
-    var words = lines[i].split(" ");
+    var words = lines[i].split(/\s+|\t/);
     if(words[0] == "DIMENSION") {
       nTotal = parseInt(words[2], 10);
       //! alert("Thank you! N: " + nTotal);
@@ -430,7 +431,7 @@ fileOutput.addEventListener('change', function(e) {
     else if(words[0] == "NODE_COORD_SECTION"){
       //! i++; // skip to next line
       for(var jj=0; jj < nTotal; ++jj){
-        words = lines[++i].split(" ");
+        words = lines[++i].split(/\s+|\t/);
         var x = parseInt(words[1], 10);
         var y = parseInt(words[2], 10);
         //! alert(x+" -- "+ y);
@@ -471,7 +472,7 @@ fileOutput.addEventListener('change', function(e) {
   var solVal = 0;
   var outVal = 0;
   for (var i = 0; i < lines.length; ++i) {
-    var words = lines[i].split(" ");
+    var words = lines[i].split(/\s+|\t/);
     var routeVal = 0;
     var prevPoint = 0
     if(words[0] == "Route") {
