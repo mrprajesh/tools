@@ -51,22 +51,31 @@ VALUE : ?
 
     FileInput (*.vrp): <input type="file" id="fileInput">
     FileOutput (*.sol): <input type="file" id="fileOutput">
+    <button onclick="formatText();drawChart();">Draw</button>
   <br>
-  <input type="radio" id="depot" name="depot" value="Depot" checked  > <label>Depot</label>
-  <input type="radio" id="depot" name="depot" value="NoDepot" > <label>No Depot</label><br>
-  <button onclick="formatText();drawChart();">Draw</button>
+  Depot Line:
+  <input type="radio" id="depot" name="depot" value="Depot" checked   > <label>True</label>
+  <input type="radio" id="depot" name="depot" value="NoDepot"         > <label>False</label>
+  <br>
+  Round cord:
+  <input type="radio" id="round" name="round" value="Round"           > <label>True</label>
+  <input type="radio" id="round" name="round" value="NoRound" checked > <label>False</label>
+  <br>
 
-  <br><br>
   <div id="chart_div"></div>
 
 
 
 <script>
-
+// GLOBAL VARS
 let aRouteCost = [];
+let aRouteDemand = [];
 let demand = [];
 let xArr = [];
 let yArr = [];
+let nTotal = 0;
+let instName = " Sample";
+let capacity = 0;
 
 fileInput.addEventListener('change', function(e) {
   var file = fileInput.files[0];
@@ -74,7 +83,7 @@ fileInput.addEventListener('change', function(e) {
 
   reader.onload = function(e) {
     document.getElementById("inBox").value = reader.result;
-  }
+  };
 
   reader.readAsText(file);
 });
@@ -85,390 +94,150 @@ fileOutput.addEventListener('change', function(e) {
 
   reader.onload = function(e) {
     document.getElementById("outBox").value = reader.result;
-  }
+  };
 
   reader.readAsText(file);
 });
 
 
 
-		google.charts.load('current', {
-        'packages': ['line', 'corechart']
-      });
+google.charts.load('current', {
+    'packages': ['line', 'corechart']
+  });
 
-      //google.charts.setOnLoadCallback(drawChart);
+  //google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
+function drawChart() {
 
-        var button = document.getElementById('change-chart');
-        var chartDiv = document.getElementById('chart_div');
+  //~ var button = document.getElementById('change-chart');
+  var chartDiv = document.getElementById('chart_div');
 
-        var data = new google.visualization.DataTable();
+  var data = new google.visualization.DataTable();
 
-        var depotLine =  document.getElementsByName('depot');
-        var isDepot = depotLine[0].checked;
-        //~ alert(isDepot);
-        data.addColumn('number', 'x-coord');
-        //data.addColumn('number', "Route 1");
-        //data.addColumn('number', "Route 2");
+  var depotLine =  document.getElementsByName('depot');
+  var isDepot   = depotLine[0].checked; // Depot lines radio button default selected!
 
+  var depotLine =  document.getElementsByName('depot');
+  var isDepot   = depotLine[0].checked; // Depot lines radio button default selected!
 
-        //~ var toolObj = {type: 'string',role: 'tooltip'};
-        //~ var certObj = {type: 'boolean',role: 'certainty'};
-        /*
-        data.addColumn('number', "Route 1");
-        data.addColumn(toolObj);
-        data.addColumn(certObj);
+  data.addColumn('number', 'x-coord');
 
-        data.addColumn('number', "Route 2");
-        data.addColumn(toolObj);
-        data.addColumn(certObj);
-
-        data.addColumn('number', "Route 3");
-        data.addColumn(toolObj);
-        data.addColumn(certObj);
-
-        data.addColumn('number', "Route 4");
-        data.addColumn(toolObj);
-        data.addColumn(certObj);
-        */
-
-        /*
-        // READ INPUT
-        var xArr = [];
-        var yArr = [];
-
-        var nTotal;
-
-        var text = document.getElementById("inBox").value;
-        text = text.trim(); // clears up whitespace chars
-        var lines = text.split("\n");
-        var nTotal = 0;
-        for (var i = 0; i < lines.length; ++i) {
-          var words = lines[i].split(/\s+|\t/);
-          if(words[0] == "DIMENSION") {
-            nTotal = parseInt(words[2], 10);
-            //! alert("Thank you! N: " + nTotal);
-          }
-          else if(words[0] == "NODE_COORD_SECTION"){
-            //! i++; // skip to next line
-            for(var jj=0; jj < nTotal; ++jj){
-              words = lines[++i].split(/\s+|\t/);
-              var x = parseInt(words[1], 10);
-              var y = parseInt(words[2], 10);
-              xArr.push(x);
-              yArr.push(y);
-            }
-          }
-          else if(words[0] == "DEMAND_SECTION"){
-            for(var jj=0; jj < nTotal; ++jj){
-              words = lines[++i].split(/\s+|\t/);
-              var v = parseInt(words[0], 10);
-              var d = parseInt(words[1], 10);
-              demand.push(d);
-              if(v-1!=jj)
-                alert("DEMAND ERROR! "+v-1+ " != " + jj);
-            }
-          }
-        }
-        */
-
-        // READ OUT
-        text = document.getElementById("outBox").value;
-  			text = text.trim(); // clears up whitespace chars
-        //text = "Route #1: 1 4\nRoute #2: 3 2 5\nRoute #3: 1 4\nRoute #4: 3 2 5\nCost 265"	//FOR DEBUG
+  // READ OUT
+  text = document.getElementById("outBox").value;
+  text = text.trim(); // clears up whitespace chars
+  //text = "Route #1: 1 4\nRoute #2: 3 2 5\nRoute #3: 1 4\nRoute #4: 3 2 5\nCost 265"	//FOR DEBUG
 
 
-        lines = text.split("\n");
-        //~ document.getElementById("resultBox").value = lines.length; //DEBUG
+  lines = text.split("\n");
+  //~ document.getElementById("resultBox").value = lines.length; //DEBUG
 
-        var toolObj = {type: 'string',role: 'tooltip'};
-        var certObj = {type: 'boolean',role: 'certainty'};
+  var toolObj = {type: 'string',role: 'tooltip'};
+  var certObj = {type: 'boolean',role: 'certainty'};
 
-       	for (let ii = 0; ii < lines.length-1 ; ++ii) {
- 					data.addColumn('number', "Route "+(ii+1));
-        	data.addColumn(toolObj);
-        	data.addColumn(certObj);
-				}
+  for (let ii = 0; ii < lines.length-1 ; ++ii) {
+    data.addColumn('number', "Route "+(ii+1));
+    data.addColumn(toolObj);
+    data.addColumn(certObj);
+  }
 
-        var k = 0;
-        var DEP=0;
-        //~ if(lines.length-1>0){
-          //~ data.addRows(1); // DEPOT
-          //~ data.setCell(k, 0, xArr[DEP]);
-          //~ data.setCell(k, shift+1, yArr[DEP]);
-          //~ k++;
-        //~ }
-        for (var i = 0, shift=0; i < lines.length-1; ++i, shift+=3) {
-          //~ var words = lines[i].split(" "); //TRIM?
-          var words = lines[i].split(/\s+|\t/); //TRIM?
+  var k = 0;
+  var DEP=0;
+
+  for (var i = 0, shift=0; i < lines.length-1; ++i, shift+=3) {
+    //~ var words = lines[i].split(" "); //TRIM?
+    var words = lines[i].split(/\s+|\t/); //spaces and tabs
 
 
-          data.addRows(words.length);  // it include +2 -- which is same a pre & post fix depot
+    data.addRows(words.length);  // it include +2 -- which is same a pre & post fix depot
 
-          if(words[0] == "Route") { // e.g Route #1: 1 2 3 4
-             if(isDepot){ // disables dashed lines: depot to 1st node
-              data.setCell(k, 0, xArr[DEP]);
-              data.setCell(k, shift+1, yArr[DEP]);
-               //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
-              data.setCell(k, shift+3, false);
-             }
-             k++;
-            for(var jj = 2, len=words.length; jj < len; ++jj, ++k ){
-              var aPoint = parseInt(words[jj], 10);
-              data.setCell(k, 0, xArr[aPoint]);
-            	data.setCell(k, shift+1, yArr[aPoint]);
-              data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: " + aPoint+ " Demand:"+demand[aPoint]+" routeCost:"+aRouteCost[i].toFixed(1) );
-              data.setCell(k, shift+3, true);
-            }
-            if(isDepot){ // disables dashed lines: last node to depot
-              data.setCell(k, 0, xArr[DEP]);
-              data.setCell(k, shift+1, yArr[DEP]);
-              data.setCell(k, shift+2, "DEPOT");
-              //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
-              data.setCell(k, shift+3, false);
-            }
-            k++;
-          }
-
-        }
-
-        data.addRows(1); // DEPOT POINT
+    if(words[0] == "Route") { // e.g Route #1: 1 2 3 4
+       if(isDepot){ // disables dashed lines: depot to 1st node
         data.setCell(k, 0, xArr[DEP]);
-        data.setCell(k, 1, yArr[DEP]);
-        data.setCell(k, 2, "DEPOT");
-
-
-        //~ var depotData = google.visualization.arrayToDataTable
-            //~ ([['x', 'Y', {'type': 'string', 'role': 'style'}],
-            //~ [xArr[DEP], yArr[DEP], 'point { size: 18; shape-type: star; fill-color: #795548; }']
-        //~ ]);
-
-        /*
-        data.addRows(7);
-        data.setCell(0, 0, 145);
-        data.setCell(0, 1, 215);
-        data.setCell(0, 2, "Route:1 Customer: 1");
-        data.setCell(0, 3, false);
-        data.setCell(1, 0, 147);
-        data.setCell(1, 1, 193);
-        data.setCell(1, 2, 'Route:1 Customer: 18');
-        data.setCell(1, 3, true);
-        data.setCell(2, 0, 155);
-        data.setCell(2, 1, 185);
-        data.setCell(2, 2, 'Route:1 Customer: 21');
-        data.setCell(2, 3, true);
-        data.setCell(3, 0, 164);
-        data.setCell(3, 1, 193);
-        data.setCell(3, 2, 'Route:1 Customer: 19');
-        data.setCell(3, 3, true);
-        data.setCell(4, 0, 164);
-        data.setCell(4, 1, 208);
-        data.setCell(4, 2, 'Route:1 Customer: 16');
-        data.setCell(4, 3, true);
-        data.setCell(5, 0, 156);
-        data.setCell(5, 1, 217);
-        data.setCell(5, 2, 'Route:1 Customer: 13');
-        data.setCell(5, 3, true);
-        data.setCell(6, 0, 145)
-        data.setCell(6, 1, 215);
-        data.setCell(6, 2, 'Route:1 Customer: 1');
-        data.setCell(6, 3, false);
-
-        data.addRows(6);
-        data.setCell(7, 0, 145);
-        data.setCell(7, 4, 215);
-        data.setCell(7, 5, 'Route:2 Customer: 1');
-        data.setCell(7, 6, false);
-        data.setCell(8, 0, 141);
-        data.setCell(8, 4, 206);
-        data.setCell(8, 5, 'Route:2 Customer: 17');
-        data.setCell(8, 6, true);
-        data.setCell(9, 0, 129);
-        data.setCell(9, 4, 189);
-        data.setCell(9, 5, 'Route:2 Customer: 20');
-        data.setCell(9, 6, true);
-        data.setCell(10, 0, 139);
-        data.setCell(10, 4, 182);
-        data.setCell(10, 5, 'Route:2 Customer: 22');
-        data.setCell(10, 6, true);
-        data.setCell(11, 0, 146);
-        data.setCell(11, 4, 208);
-        data.setCell(11, 5, 'Route:2 Customer: 15');
-        data.setCell(11, 6, true);
-        data.setCell(12, 0, 145);
-        data.setCell(12, 4, 215);
-        data.setCell(12, 5, 'Route:2 Customer: 1');
-        data.setCell(12, 6, false);
-
-        data.addRows(8);
-        data.setCell(13, 0, 145);
-        data.setCell(13, 7, 215);
-        data.setCell(13, 8, 'Route:3 Customer: 1');
-        data.setCell(13, 9, false);
-        data.setCell(14, 0, 129);
-        data.setCell(14, 7, 214);
-        data.setCell(14, 8, 'Route:3 Customer: 14');
-        data.setCell(14, 9, true);
-        data.setCell(15, 0, 128);
-        data.setCell(15, 7, 231);
-        data.setCell(15, 8, 'Route:3 Customer: 12');
-        data.setCell(15, 9, true);
-        data.setCell(16, 0, 128);
-        data.setCell(16, 7, 252);
-        data.setCell(16, 8, 'Route:3 Customer: 5');
-        data.setCell(16, 9, true);
-        data.setCell(17, 0, 130);
-        data.setCell(17, 7, 254);
-        data.setCell(17, 8, 'Route:3 Customer: 4');
-        data.setCell(17, 9, true);
-        data.setCell(18, 0, 142);
-        data.setCell(18, 7, 239);
-        data.setCell(18, 8, 'Route:3 Customer: 9');
-        data.setCell(18, 9, true);
-        data.setCell(19, 0, 148);
-        data.setCell(19, 7, 232);
-        data.setCell(19, 8, 'Route:3 Customer: 11');
-        data.setCell(19, 9, true);
-        data.setCell(20, 0, 145);
-        data.setCell(20, 7, 215);
-        data.setCell(20, 8, 'Route:3 Customer: 1');
-        data.setCell(20, 9, false);
-
-        data.addRows(8);
-        data.setCell(21, 0, 145);
-        data.setCell(21, 10, 215);
-        data.setCell(21, 11, 'Route:4 Customer: 1');
-        data.setCell(21, 12, false);
-        data.setCell(22, 0, 163);
-        data.setCell(22, 10, 236);
-        data.setCell(22, 11, 'Route:4 Customer: 10');
-        data.setCell(22, 12, true);
-        data.setCell(23, 0, 161);
-        data.setCell(23, 10, 242);
-        data.setCell(23, 11, 'Route:4 Customer: 8');
-        data.setCell(23, 12, true);
-        data.setCell(24, 0, 163);
-        data.setCell(24, 10, 247);
-        data.setCell(24, 11, 'Route:4 Customer: 6');
-        data.setCell(24, 12, true);
-        data.setCell(25, 0, 159);
-        data.setCell(25, 10, 261);
-        data.setCell(25, 11, 'Route:4 Customer: 3');
-        data.setCell(25, 12, true);
-        data.setCell(26, 0, 151);
-        data.setCell(26, 10, 264);
-        data.setCell(26, 11, 'Route:4 Customer: 2');
-        data.setCell(26, 12, true);
-        data.setCell(27, 0, 146);
-        data.setCell(27, 10, 246);
-        data.setCell(27, 11, 'Route:4 Customer: 7');
-        data.setCell(27, 12, true);
-        data.setCell(28, 0, 145);
-        data.setCell(28, 10, 215);
-        data.setCell(28, 11, 'Route:4 Customer: 1');
-        data.setCell(28, 12, false);
-				*/
-        /*
-        var materialOptions = {
-          chart: {
-            title: 'DIMACS Toy example'
-          },
-          width: 900,
-          height: 500,
-          legend: true,
-          annotationsWidth: 5,
-          pointSize: 5
-          series: {
-            // Gives each series an axis name that matches the Y-axis below.
-            0: {
-              axis: 'Temps'
-            },
-            1: {
-              axis: 'Daylight'
-            }
-          },
-          axes: {
-            // Adds labels to each axis; they don't have to match the axis names.
-            y: {
-              Temps: {
-                label: 'Temps (Celsius)'
-              },
-              Daylight: {
-                label: 'Daylight'
-              }
-            }
-          }
-        };
-        */
-        var classicOptions = {
-          title: 'DIMACS sample',
-          width: 1024,
-          height: 1024,
-          legend: true,
-          annotationsWidth: 5,
-          pointSize: 15,
-          //~ series: {
-                //~ 0: { pointShape: 'star' },
-                //~ 1: { pointShape: 'triangle' },
-                //~ 2: { pointShape: 'square' },
-                //~ 3: { pointShape: 'diamond' },
-                //~ 4: { pointShape: 'star' },
-                //~ 5: { pointShape: 'polygon' }
-            //~ }
-        };
-
-
-        /*
-        function drawMaterialChart() {
-          var materialChart = new google.charts.Line(chartDiv);
-          materialChart.draw(data, materialOptions);
-          //button.innerText = 'Choose Solution';
-          //button.onclick = drawClassicChart;
-
-          //var chart = new google.visualization.LineChart(chartDiv));
-          //chart.draw(data, materialOptions);
-        }
-        */
-
-        function drawClassicChart() {
-          var classicChart = new google.visualization.LineChart(chartDiv);
-          classicChart.draw(data, classicOptions);
-          //~ classicChart.draw(depotData, classicOptions);
-          //button.innerText = 'Change to Material';
-          //button.onclick = drawMaterialChart;
-
-        }
-
-        drawClassicChart();
-
+        data.setCell(k, shift+1, yArr[DEP]);
+         //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
+        data.setCell(k, shift+3, false);
+       }
+       k++;
+      for(var jj = 2, len=words.length; jj < len; ++jj, ++k ){
+        var aPoint = parseInt(words[jj], 10);
+        data.setCell(k, 0, xArr[aPoint]);
+        data.setCell(k, shift+1, yArr[aPoint]);
+        data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: " + aPoint+ " Demand:"+demand[aPoint]+" routeDemand:"+aRouteDemand[i]);
+        data.setCell(k, shift+3, true);
       }
+      if(isDepot){ // disables dashed lines: last node to depot
+        data.setCell(k, 0, xArr[DEP]);
+        data.setCell(k, shift+1, yArr[DEP]);
+        data.setCell(k, shift+2, "DEPOT");
+        //~ data.setCell(k, shift+2, "Route: " + (i+1) +" Customer: 0");
+        data.setCell(k, shift+3, false);
+      }
+      k++;
+    }
+
+  }
+
+  data.addRows(1); // TO ADD DEPOT POINT when disabling dashed lines
+  data.setCell(k, 0, xArr[DEP]);
+  data.setCell(k, 1, yArr[DEP]);
+  data.setCell(k, 2, "DEPOT");
+
+  function drawClassicChart() {
+    var classicOptions = {
+      title: 'DIMACS Instance:  ' + instName + '  N:' + nTotal + '  Capacity:' + capacity,
+      width: 1024,
+      height: 1024,
+      legend: true,
+      annotationsWidth: 5,
+      pointSize: 15,
+      //~ series: {
+            //~ 0: { pointShape: 'star' },
+            //~ 1: { pointShape: 'triangle' },
+            //~ 2: { pointShape: 'square' },
+            //~ 3: { pointShape: 'diamond' },
+            //~ 4: { pointShape: 'star' },
+            //~ 5: { pointShape: 'polygon' }
+        //~ }
+    };
+
+    var classicChart = new google.visualization.LineChart(chartDiv);
+    classicChart.draw(data, classicOptions);
+    //~ classicChart.draw(depotData, classicOptions);
+    //button.innerText = 'Change to Material';
+    //button.onclick = drawMaterialChart;
+
+  }
+
+  drawClassicChart();
+
+}
 
 function formatText() {
   var formatedText = "N";
-  //! var DEFAULT = -1;
-  //! var N = DEFAULT;
-  //! var x = DEFAULT,
-  //! var y = DEFAULT;
 
-  console.info(demand);
+  //console.info(demand);
 
   var text = document.getElementById("inBox").value;
   text = text.trim(); // clears up whitespace chars
   var lines = text.split("\n");
-  var nTotal = 0;
+
   //! vat xArr = {};
   //! vat yArr = {};
   for (var i = 0; i < lines.length; ++i) {
-    var words = lines[i].split(/\s+|\t/);
-    if(words[0] == "DIMENSION") {
+    var words = lines[i].split(/\s+|\t/); //spaces and tabs
+    if(words[0] == "NAME") {
+      instName = words[2];
+    }
+    else if(words[0] == "DIMENSION") {
       nTotal = parseInt(words[2], 10);
-      //! alert("Thank you! N: " + nTotal);
+    }
+    else if(words[0] == "CAPACITY") {
+      capacity = parseInt(words[2], 10);
     }
     else if(words[0] == "NODE_COORD_SECTION"){
       //! i++; // skip to next line
       for(var jj=0; jj < nTotal; ++jj){
-        words = lines[++i].split(/\s+|\t/);
+        words = lines[++i].split(/\s+|\t/); //spaces and tabs
         var x = parseInt(words[1], 10);
         var y = parseInt(words[2], 10);
         //! alert(x+" -- "+ y);
@@ -480,7 +249,7 @@ function formatText() {
     else if(words[0] == "DEMAND_SECTION"){
       //! i++; // skip to next line
       for(var jj=0; jj < nTotal; ++jj){
-        words = lines[++i].split(/\s+|\t/);
+        words = lines[++i].split(/\s+|\t/); //spaces and tabs
         var v = parseInt(words[0], 10);
         var d = parseInt(words[1], 10);
         demand.push(d);
@@ -507,7 +276,7 @@ function formatText() {
         //! alert("dist " +ii + " " + jj+ " :" + d);
         dist[ii][jj] = d;
         dist[jj][ii] = d;
-        console.log(d + " ");
+        //~ console.log(d + " ");
       }
       //! console.log("\n");
     }
@@ -518,31 +287,36 @@ function formatText() {
   lines = text.split("\n");
 
 
-  var solVal = 0;
-  var outVal = 0;
+  var solVal = 0.0;
+  var outVal = 0.0;
   for (var i = 0; i < lines.length; ++i) {
-    var words = lines[i].split(/\s+|\t/);
-    var routeVal = 0;
-    var prevPoint = 0
+    var words = lines[i].split(/\s+|\t/); //spaces and tabs
+    var routeVal = 0.0;
+    var prevPoint = 0;
+    var rDemand = 0;
     if(words[0] == "Route") {
       for(var jj = 2, len=words.length; jj < len; ++jj ){
         //! alert(words[jj]);
+        //~ Route #1: 56 146 149
         var aPoint = parseInt(words[jj], 10);
+        rDemand +=demand[aPoint];
         routeVal += dist[prevPoint][aPoint];
         prevPoint = aPoint;
       }
       routeVal +=dist[prevPoint][0];
       solVal +=routeVal;
+      console.log(solVal); //PRINT
       aRouteCost.push(routeVal);
+      aRouteDemand.push(rDemand);
     }
     else if(words[0] == "Cost"){
       outVal = parseInt(words[1], 10);
+      alert(outVal);
     }
   }
 
-  //! alert("SolVal: " + solVal);
-
   var isValid = Math.round(solVal) == outVal;
+  //~ var isValid = Math.abs(solVal-outVal) < 1;
   formatedText  =   "N\t: "    + nTotal  + "\n";
   formatedText +=  "VALID\t: " + isValid + "\n";
   formatedText +=  "VALUE\t: " + solVal  + "\n";
