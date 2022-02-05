@@ -286,6 +286,7 @@ function formatText() {
   var lines = text.split("\n");
 
   for (var i = 0; i < lines.length; ++i) {
+    lines[i]=lines[i].trim(); //MUST for cleaning!
     var words = lines[i].split(/\s+|\t/); //spaces and tabs
     if(words[0] == "NAME") {
       instName = words[2];
@@ -360,7 +361,7 @@ function formatText() {
   var solVal = 0.0;
   var outVal = 0.0;
   for (var i = 0; i < lines.length; ++i) {
-    lines[i]=lines[i].trim(); //MUST
+    lines[i]=lines[i].trim(); //MUST for cleaning!
     var words = lines[i].split(/\s+|\t/); //spaces and tabs
     var routeVal = 0.0;
     var prevPoint = 0;
