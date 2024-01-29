@@ -12,6 +12,7 @@ Welcome to [Rajesh's](https://mrprajesh.co.in/) tools. These are some of the too
 #### Steiner Tree
 
 Steps
+1. Click on [STP tool page](https://mrprajesh.github.io/tools/pace.html)
 1. Choose the input `.stp` file.
 2. Click the `convert` button to generate graphviz text.
 3. Click copy (get into your clipboard).
@@ -24,6 +25,7 @@ Demo video:
 #### CVRP
 Steps
 
+1. Click on [CVRP GUI tool page](https://mrprajesh.github.io/tools/cvrp2.html)
 1. Two ways: choose the input `.vrp` file and ouput `.sol` file, or paste the its contents into text box.
 2. Click draw button.
 3. The routes are visualized below (Bonus: there is s check if the cost values computed matches printed cost).
